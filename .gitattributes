@@ -1,10 +1,8 @@
-# Linguist — keep the public language bar product-focused
-docs/** linguist-documentation
-specs/** linguist-documentation
-evals/** linguist-documentation
-data/fixtures/** linguist-documentation
-docker/** linguist-vendored
-*.sql linguist-vendored
-Dockerfile linguist-vendored
-*.mjs linguist-vendored
-data/scripts/** linguist-vendored
+# GitHub Linguist — show the real stack (not only TypeScript)
+# Lockfiles would dominate the bar if counted.
+pnpm-lock.yaml linguist-generated=true
+package-lock.json linguist-generated=true
+yarn.lock linguist-generated=true
+
+# Tiny sample texts — not product code
+data/fixtures/** linguist-documentation=true
