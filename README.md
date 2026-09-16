@@ -1,28 +1,49 @@
 # cite-rag
 
-Citation-backed RAG chatbot over 1,000+ documents: chunk → embed → retrieve → answer with inline citations, or refuse when retrieval is weak.
+Production-style **citation-backed RAG**: ingest 1,000+ docs → chunk → embed → pgvector retrieve → grounded answers with openable sources — or refuse when retrieval is weak.
 
+**Live:** https://cite-rag.vercel.app  
+**Repo:** https://github.com/tanmays0/cite-rag
 
-| Layer | Stack |
+[![Next.js](https://img.shields.io/badge/Next.js_15-black?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vercel AI SDK](https://img.shields.io/badge/Vercel_AI_SDK-000000?logo=vercel&logoColor=white)](https://sdk.vercel.ai/)
+[![pgvector](https://img.shields.io/badge/pgvector-336791?logo=postgresql&logoColor=white)](https://github.com/pgvector/pgvector)
+[![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=black)](https://supabase.com/)
+[![Groq](https://img.shields.io/badge/Groq-LLM-F55036?logo=groq&logoColor=white)](https://groq.com/)
+[![Auth.js](https://img.shields.io/badge/Auth.js-black?logo=auth0&logoColor=white)](https://authjs.dev/)
+[![Drizzle](https://img.shields.io/badge/Drizzle_ORM-C5F74F?logo=drizzle&logoColor=black)](https://orm.drizzle.team/)
+[![Transformers.js](https://img.shields.io/badge/Transformers.js-MiniLM-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/docs/transformers.js)
+[![Tailwind](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)](https://cite-rag.vercel.app)
+
+## Tech stack
+
+| Layer | What ships |
 | --- | --- |
-| App | Next.js 15 (App Router), TypeScript, Tailwind CSS |
-| RAG | `@cite-rag/rag` — chunk, retrieve, ground, cite |
-| Vectors | Supabase Postgres + pgvector (384-d) |
-| Embeddings | `Xenova/all-MiniLM-L6-v2` (optional OpenAI) |
-| LLM | Groq `openai/gpt-oss-20b` |
-| Auth | Auth.js credentials + demo account |
-| Deploy | Vercel + Supabase — [DEPLOY.md](./DEPLOY.md) |
+| **Frontend** | Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, Motion, Lenis |
+| **API** | Next.js Route Handlers, Vercel AI SDK streaming, Zod validation |
+| **Auth & limits** | Auth.js (credentials + demo user), per-route rate limiting |
+| **RAG core** | Monorepo package `@cite-rag/rag` — chunk, retrieve, ground, cite |
+| **Vectors** | Supabase Postgres + **pgvector** (HNSW / cosine, 384-d) |
+| **Embeddings** | In-process **Transformers.js** `all-MiniLM-L6-v2` (free); optional OpenAI |
+| **LLM** | Groq `openai/gpt-oss-20b` via AI SDK |
+| **ORM / DB** | Drizzle ORM, offline CLI ingest (1,000+ docs, resume-safe) |
+| **Uploads** | PDF/TXT parse, optional Vercel Blob |
+| **Evals** | Hit-rate@k, citation presence, OOD refusal scorecard |
+| **Ops** | Docker Compose (local Postgres + pgvector), Vercel production |
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  Browser["Next.js chat UI"]
-  API["Route handlers"]
-  Auth["Auth.js + rate limit"]
-  RAG["packages/rag"]
-  DB["Supabase Postgres + pgvector"]
-  Embed["MiniLM embeddings"]
+  Browser["Next.js 15 + React 19"]
+  API["Route Handlers + AI SDK"]
+  Auth["Auth.js + rate limits"]
+  RAG["@cite-rag/rag"]
+  DB["Supabase + pgvector"]
+  Embed["Transformers.js MiniLM"]
   Groq["Groq LLM"]
   CLI["Ingest CLI"]
 
