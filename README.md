@@ -2,9 +2,6 @@
 
 Citation-backed RAG chatbot over 1,000+ documents: chunk → embed → retrieve → answer with inline citations, or refuse when retrieval is weak.
 
-**Live demo:** https://cite-rag.vercel.app  
-**Author:** Tanmay Shinde
-
 | Layer | Stack |
 | --- | --- |
 | App | Next.js 15 (App Router), TypeScript, Tailwind CSS |
