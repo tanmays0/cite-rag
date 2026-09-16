@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+.pnpm-store
+dist
+.next
+.turbo
+out
+build
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS / IDE
+.DS_Store
+*.pem
+.idea
+.vscode
+
+# Data / uploads (large corpus not in git)
+data/corpus/
+data/uploads/
+*.sqlite
+
+# Spec Kit
+.specify/feature.json
+.cursor/
+
+# Scans
+strix_runs/
+
+# Local artifacts
+.playwright-mcp/
+gate-*.png
+*.webp
+
+# Vercel
+.vercel
+
+# Vendored embedding weights (downloaded at build)
+apps/web/models/
+
+# Logs
+*.log
+npm-debug.log*
+.env*
+*.tsbuildinfo

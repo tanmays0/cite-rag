@@ -1,0 +1,22 @@
+{
+  "name": "cite-rag",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @cite-rag/web dev",
+    "build": "pnpm --filter @cite-rag/rag build && pnpm --filter @cite-rag/web build",
+    "start": "pnpm --filter @cite-rag/web start",
+    "lint": "pnpm --filter @cite-rag/web lint",
+    "test": "pnpm --filter @cite-rag/rag test",
+    "db:generate": "pnpm --filter @cite-rag/web db:generate",
+    "db:migrate": "pnpm --filter @cite-rag/web db:migrate",
+    "db:seed-demo": "pnpm --filter @cite-rag/web db:seed-demo",
+    "corpus:generate": "node data/scripts/generate-synthetic-corpus.mjs --limit 1000",
+    "corpus:ingest": "pnpm --filter @cite-rag/web corpus:ingest",
+    "eval": "pnpm --filter @cite-rag/web eval"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

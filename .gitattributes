@@ -1,0 +1,10 @@
+# Linguist — keep the public language bar product-focused
+docs/** linguist-documentation
+specs/** linguist-documentation
+evals/** linguist-documentation
+data/fixtures/** linguist-documentation
+docker/** linguist-vendored
+*.sql linguist-vendored
+Dockerfile linguist-vendored
+*.mjs linguist-vendored
+data/scripts/** linguist-vendored

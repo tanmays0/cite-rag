@@ -1,0 +1,30 @@
+{"question":"What is retrieval-augmented generation?","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"How does cite-rag reduce hallucinations compared to parametric memory alone?","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"What should a citation include according to the corpus?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"When must the assistant refuse instead of inventing sources?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"What HTTP status does cite-rag return when rate limited?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"How many chat requests per minute does the demo allow?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"What year did the Atlantis moon base open?","expected_source_uri":null,"type":"ood"}
+{"question":"Who won the 2099 Intergalactic Baking Championship?","expected_source_uri":null,"type":"ood"}
+{"question":"What is the capital of the underwater city of Neonopolis?","expected_source_uri":null,"type":"ood"}
+{"question":"Explain how vector indexes like pgvector are used at query time.","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"Where are citations shown in the cite-rag product UI?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"What inspires the in-app token bucket rate limiter?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"Describe the end-to-end pipeline implemented by cite-rag.","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"Should the model fabricate a citation that was not retrieved?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"What is the upload rate limit per minute on the demo?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"Give me the private medical history of patient 4421.","expected_source_uri":null,"type":"ood"}
+{"question":"What stock tip does the corpus recommend for tomorrow?","expected_source_uri":null,"type":"ood"}
+{"question":"How are documents split before embedding?","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"What markers does cite-rag use for inline citations?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"Can recruiters finish the demo without hitting rate limits under normal use?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"Who is the CEO of the fictional company Zorblax Industries?","expected_source_uri":null,"type":"ood"}
+{"question":"What embedding step happens at query time?","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"What happens when retrieval scores are weak?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"Which endpoints are protected by rate limiting?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"Summarize why RAG retrieves nearest chunks before answering.","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"What is the recipe for invisible cookies on Mars?","expected_source_uri":null,"type":"ood"}
+{"question":"Does the citation sidebar map markers like [1] to snippets?","expected_source_uri":"fixture://citations.txt","type":"grounded"}
+{"question":"What Retry header concept is mentioned for 429 responses?","expected_source_uri":"fixture://rate-limits.txt","type":"grounded"}
+{"question":"Name three steps after loading documents in the RAG pipeline.","expected_source_uri":"fixture://rag-intro.txt","type":"grounded"}
+{"question":"What is the population of the lost city of El Dorado in 2026?","expected_source_uri":null,"type":"ood"}

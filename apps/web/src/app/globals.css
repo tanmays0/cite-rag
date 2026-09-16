@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0b0e12;
+  --ink-elevated: #141920;
+  --ink-soft: #141920;
+  --slate: #2a323c;
+  --mist: #9aa3ad;
+  --paper: #e8ebe6;
+  --paper-dim: #c5cbc4;
+  --marker: #c8f04a;
+  --marker-ink: #12160a;
+  --accent: #c8f04a;
+  --accent-deep: #a8d12e;
+  --teal-mute: #5f8f8a;
+  --ok: #5f8f8a;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Sora", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --ring: var(--marker);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-elevated: var(--ink-elevated);
+  --color-ink-soft: var(--ink-soft);
+  --color-slate: var(--slate);
+  --color-mist: var(--mist);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-marker: var(--marker);
+  --color-marker-ink: var(--marker-ink);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-teal-mute: var(--teal-mute);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--paper);
+  background:
+    radial-gradient(1000px 520px at 8% -8%, rgba(200, 240, 74, 0.06), transparent 55%),
+    radial-gradient(800px 480px at 92% 4%, rgba(95, 143, 138, 0.05), transparent 50%),
+    linear-gradient(165deg, #080a0d 0%, var(--ink) 45%, #10151c 100%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--marker);
+  outline-offset: 2px;
+}
+
+.atmosphere {
+  position: relative;
+  overflow: hidden;
+}
+
+.atmosphere::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(232, 235, 230, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 235, 230, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, black 18%, transparent 72%);
+  opacity: 0.45;
+}
+
+.atmosphere::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-line {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.animate-rise {
+  animation: rise 0.7s ease-out both;
+}
+
+.animate-rise-delay {
+  animation: rise 0.8s ease-out 0.12s both;
+}
+
+.animate-pulse-line {
+  animation: pulse-line 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-pulse-line {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.brand-mark {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.03em;
+}
+
+.prose-cite a {
+  color: var(--marker);
+}
+
+.panel {
+  background: color-mix(in srgb, var(--ink-elevated) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--paper) 10%, transparent);
+}

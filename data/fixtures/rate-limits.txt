@@ -1,0 +1,5 @@
+Rate limiting protects chat and upload endpoints from abuse on free-tier demos.
+cite-rag uses an in-app token bucket inspired by LimitLab concepts.
+When a client exceeds the per-minute budget, the API returns HTTP 429 with Retry-After.
+Chat may allow about twenty requests per minute; ingest is stricter at five per minute.
+Recruiters can still complete the demo script without hitting limits under normal use.

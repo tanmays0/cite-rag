@@ -1,0 +1,6 @@
+Retrieval-Augmented Generation (RAG) combines a search step with a language model.
+Documents are split into chunks, each chunk is embedded into a vector, and those vectors
+are stored in a vector index such as pgvector. At query time the user question is embedded
+with the same model, the nearest chunks are retrieved, and the language model answers using
+only that context. This reduces hallucinations compared to answering from parametric memory alone.
+cite-rag implements this pipeline end-to-end: load, chunk, embed, index, retrieve, and cite.

@@ -1,0 +1,5 @@
+Inline citations link each claim in an answer back to a retrieved chunk.
+A citation should include the source document title and a page or section when available.
+If retrieval scores are weak, the assistant must refuse rather than invent sources.
+cite-rag shows citations in a sidebar and maps markers like [1] to passage snippets.
+Never fabricate a citation that was not returned by the retriever.
