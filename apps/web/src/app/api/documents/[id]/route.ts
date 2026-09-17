@@ -46,7 +46,19 @@ export async function GET(
     },
     chunks: chunkRows.map((c) => ({
       ...c,
-      preview: c.content.slice(0, 400),
+      preview: previewAtWordBoundary(c.content, 400),
     })),
   });
+}
+
+/** Truncate for UI without cutting a word in half. */
+function previewAtWordBoundary(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const slice = text.slice(0, max);
+  const breakAt = Math.max(
+    slice.lastIndexOf("\n"),
+    slice.lastIndexOf(" "),
+  );
+  const cut = breakAt > max * 0.6 ? breakAt : max;
+  return `${slice.slice(0, cut).trimEnd()}…`;
 }

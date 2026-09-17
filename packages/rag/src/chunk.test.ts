@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { chunkText, estimateTokens } from "./chunk.js";
+import {
+  chunkText,
+  estimateTokens,
+  findChunkEnd,
+  snapToWordStart,
+} from "./chunk.js";
 import {
   DEFAULT_DISTANCE_THRESHOLD,
   applyGroundingGate,
@@ -21,6 +26,33 @@ describe("chunkText", () => {
     expect(chunks[1]!.chunkIndex).toBe(1);
     expect(chunks.every((c) => c.content.length > 0)).toBe(true);
     expect(estimateTokens(chunks[0]!.content)).toBe(chunks[0]!.tokenCount);
+  });
+
+  it("does not split tokens mid-word at chunk boundaries", () => {
+    const words = Array.from({ length: 400 }, (_, i) => `token${i}`);
+    const text = words.join(" ");
+    const chunks = chunkText(text, { targetTokens: 50, overlapRatio: 0.2 });
+    expect(chunks.length).toBeGreaterThan(2);
+
+    for (const chunk of chunks) {
+      for (const part of chunk.content.split(/\s+/).filter(Boolean)) {
+        expect(part).toMatch(/^token\d+$/);
+      }
+    }
+  });
+
+  it("snaps overlap starts to word boundaries", () => {
+    const text = "alpha beta gamma delta epsilon zeta eta theta";
+    expect(snapToWordStart(text, 0)).toBe(0);
+    expect(snapToWordStart(text, 8)).toBe(6); // mid "beta" → start of beta
+    expect(snapToWordStart(text, 6)).toBe(6); // already at word start
+  });
+
+  it("findChunkEnd prefers sentence or word breaks", () => {
+    const text = "Short intro. " + "word ".repeat(200) + "Tail sentence ends here.";
+    const end = findChunkEnd(text, 0, 120);
+    expect(end).toBeLessThanOrEqual(120);
+    expect(text[end - 1]).toMatch(/[\s.]/);
   });
 });
 
