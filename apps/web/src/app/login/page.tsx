@@ -2,7 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -64,6 +64,14 @@ function LoginForm() {
     router.push(callbackUrl);
     router.refresh();
   }
+
+  useEffect(() => {
+    if (params.get("demo") === "1") {
+      void useDemo();
+    }
+    // Auto-start demo once when ?demo=1 is present
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-88px)] w-full max-w-md flex-col justify-center px-6 pb-16">

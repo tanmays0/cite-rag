@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { TryDemoButton } from "@/components/marketing/try-demo-button";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +40,34 @@ export function SiteHeader() {
       </Link>
 
       <nav className="flex items-center gap-1 text-sm text-mist">
-        {isMarketing && !isLanding ? null : null}
+        {isLanding ? (
+          <>
+            <Link
+              href="#how-it-works"
+              className="cursor-pointer rounded-md px-3 py-1.5 transition hover:bg-white/5 hover:text-paper"
+            >
+              Pipeline
+            </Link>
+            <Link
+              href="https://github.com/tanmays0/cite-rag"
+              className="cursor-pointer rounded-md px-3 py-1.5 transition hover:bg-white/5 hover:text-paper"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              GitHub
+            </Link>
+            {session?.user ? (
+              <Button asChild size="sm" className="ml-2" variant="secondary">
+                <Link href="/chat">Open chat</Link>
+              </Button>
+            ) : (
+              <TryDemoButton size="sm" className="ml-2">
+                Try demo
+              </TryDemoButton>
+            )}
+          </>
+        ) : null}
+
         {(isApp || (!isMarketing && !isLanding)) &&
           appLinks.map((link) => {
             const active =

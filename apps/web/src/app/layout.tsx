@@ -22,9 +22,22 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "cite-rag — citation-backed document Q&A",
+  metadataBase: new URL("https://cite-rag.vercel.app"),
+  title: {
+    default: "cite-rag — citation-backed RAG that refuses to hallucinate",
+    template: "%s · cite-rag",
+  },
   description:
-    "Ask a real indexed corpus. Grounded answers show citations you can open — and refuse when retrieval is weak.",
+    "Production RAG over 1,000+ docs with MiniLM embeddings, pgvector retrieval, Groq generation, and grounded citations — or an explicit refusal when confidence is low.",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://cite-rag.vercel.app",
+    siteName: "cite-rag",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
