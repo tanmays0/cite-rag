@@ -48,7 +48,7 @@ function LoginForm() {
     router.refresh();
   }
 
-  async function useDemo() {
+  async function startDemoAccount() {
     setLoading(true);
     setError(null);
     const res = await signIn("credentials", {
@@ -67,7 +67,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (params.get("demo") === "1") {
-      void useDemo();
+      void startDemoAccount();
     }
     // Auto-start demo once when ?demo=1 is present
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,7 +84,7 @@ function LoginForm() {
         type="button"
         size="lg"
         className="mt-8 w-full"
-        onClick={useDemo}
+        onClick={startDemoAccount}
         disabled={loading}
       >
         {loading ? "Signing in…" : "Use demo account"}
