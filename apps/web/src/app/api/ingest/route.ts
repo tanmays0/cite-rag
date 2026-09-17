@@ -63,16 +63,22 @@ export async function POST(req: Request) {
   const title = file.name.replace(/\.[^.]+$/, "") || "Upload";
   const sourceUri = `upload://${session.user.id}/${Date.now()}-${file.name}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    await put(sourceUri, buffer, {
-      access: "public",
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: resolvedMime,
-    });
-  } else {
-    const dir = join(process.cwd(), "../../data/uploads");
-    await mkdir(dir, { recursive: true });
-    await writeFile(join(dir, `${Date.now()}-${file.name}`), buffer);
+  // Raw-file persistence is optional — embeddings land in Postgres either way.
+  // On Vercel the filesystem is read-only; without Blob, skip disk write.
+  try {
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      await put(sourceUri, buffer, {
+        access: "public",
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+        contentType: resolvedMime,
+      });
+    } else if (!process.env.VERCEL) {
+      const dir = join(process.cwd(), "../../data/uploads");
+      await mkdir(dir, { recursive: true });
+      await writeFile(join(dir, `${Date.now()}-${file.name}`), buffer);
+    }
+  } catch (err) {
+    console.warn("[ingest] optional raw-file store skipped:", err);
   }
 
   try {

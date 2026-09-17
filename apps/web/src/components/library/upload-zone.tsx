@@ -29,11 +29,16 @@ export function UploadZone({
 
     try {
       const res = await fetch("/api/ingest", { method: "POST", body: fd });
-      const data = (await res.json()) as { error?: string; documentId?: string };
       window.clearInterval(tick);
+      let data: { error?: string; documentId?: string } = {};
+      try {
+        data = (await res.json()) as { error?: string; documentId?: string };
+      } catch {
+        data = {};
+      }
       if (!res.ok) {
         setProgress(0);
-        setError(data.error || "Upload failed");
+        setError(data.error || `Upload failed (${res.status})`);
       } else {
         setProgress(100);
         setMessage("Document ingested and indexed.");
