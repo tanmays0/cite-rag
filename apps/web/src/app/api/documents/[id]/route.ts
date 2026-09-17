@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db";
@@ -33,6 +33,9 @@ export async function GET(
     .orderBy(asc(chunks.chunkIndex))
     .limit(100);
 
+  const canDelete =
+    doc.sourceType === "upload" && doc.ownerUserId === session.user.id;
+
   return NextResponse.json({
     document: {
       id: doc.id,
@@ -43,12 +46,49 @@ export async function GET(
       sourceUri: doc.sourceUri,
       byteSize: doc.byteSize,
       createdAt: doc.createdAt,
+      canDelete,
     },
     chunks: chunkRows.map((c) => ({
       ...c,
       preview: previewAtWordBoundary(c.content, 400),
     })),
   });
+}
+
+export async function DELETE(
+  _req: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const docs = await db.select().from(documents).where(eq(documents.id, id)).limit(1);
+  const doc = docs[0];
+  if (!doc) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (doc.sourceType !== "upload" || doc.ownerUserId !== session.user.id) {
+    return NextResponse.json(
+      { error: "Only your uploaded documents can be deleted" },
+      { status: 403 },
+    );
+  }
+
+  await db
+    .delete(documents)
+    .where(
+      and(
+        eq(documents.id, id),
+        eq(documents.ownerUserId, session.user.id),
+        eq(documents.sourceType, "upload"),
+      ),
+    );
+
+  return NextResponse.json({ ok: true });
 }
 
 /** Truncate for UI without cutting a word in half. */
