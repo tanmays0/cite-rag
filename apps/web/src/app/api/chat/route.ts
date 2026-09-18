@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     content: lastUser.content,
   });
 
-  const retrieved = await retrieveTopK(lastUser.content);
+  const retrieved = await retrieveTopK(lastUser.content, undefined, session.user.id);
   const gate = applyGroundingGate(retrieved, retrievalThreshold());
 
   if (!gate.grounded) {

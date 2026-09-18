@@ -18,9 +18,9 @@ async function ensureDemoUser() {
   const passwordHash = await hash(password, 10);
   const [user] = await db
     .insert(users)
-    .values({ email, passwordHash })
+    .values({ email, passwordHash, isGuest: false })
     .returning();
-  console.log(`Created demo user: ${email} / ${password}`);
+  console.log(`Created seed user: ${email}`);
   return user!;
 }
 

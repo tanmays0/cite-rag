@@ -9,11 +9,14 @@ import {
   rateLimitHeaders,
   takeToken,
 } from "@/lib/rate-limit";
+import {
+  detectUploadMime,
+  sanitizeUploadFilename,
+  sanitizeUploadTitle,
+} from "@/lib/upload-validation";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
-
-const ALLOWED = new Set(["application/pdf", "text/plain", "text/markdown"]);
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -44,24 +47,25 @@ export async function POST(req: Request) {
     );
   }
 
-  const mime = file.type || "application/octet-stream";
-  if (!ALLOWED.has(mime) && !file.name.endsWith(".txt") && !file.name.endsWith(".pdf")) {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  if (buffer.byteLength > maxBytes) {
     return NextResponse.json(
-      { error: "Only PDF and TXT are supported" },
+      { error: `File exceeds ${maxBytes} bytes` },
+      { status: 413, headers: rateLimitHeaders(rl) },
+    );
+  }
+
+  const resolvedMime = detectUploadMime(buffer);
+  if (!resolvedMime) {
+    return NextResponse.json(
+      { error: "Only PDF and plain-text uploads are supported" },
       { status: 415, headers: rateLimitHeaders(rl) },
     );
   }
 
-  const resolvedMime =
-    mime === "application/octet-stream"
-      ? file.name.endsWith(".pdf")
-        ? "application/pdf"
-        : "text/plain"
-      : mime;
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const title = file.name.replace(/\.[^.]+$/, "") || "Upload";
-  const sourceUri = `upload://${session.user.id}/${Date.now()}-${file.name}`;
+  const safeName = sanitizeUploadFilename(file.name);
+  const title = sanitizeUploadTitle(safeName);
+  const sourceUri = `upload://${session.user.id}/${Date.now()}-${safeName}`;
 
   // Raw-file persistence is optional — embeddings land in Postgres either way.
   // On Vercel the filesystem is read-only; without Blob, skip disk write.
@@ -75,7 +79,7 @@ export async function POST(req: Request) {
     } else if (!process.env.VERCEL) {
       const dir = join(process.cwd(), "../../data/uploads");
       await mkdir(dir, { recursive: true });
-      await writeFile(join(dir, `${Date.now()}-${file.name}`), buffer);
+      await writeFile(join(dir, `${Date.now()}-${safeName}`), buffer);
     }
   } catch (err) {
     console.warn("[ingest] optional raw-file store skipped:", err);

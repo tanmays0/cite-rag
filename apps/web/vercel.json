@@ -2,5 +2,11 @@
   "buildCommand": "cd ../.. && pnpm --filter @cite-rag/rag build && pnpm --filter @cite-rag/web build",
   "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "crons": [
+    {
+      "path": "/api/cron/cleanup-guests",
+      "schedule": "0 5 * * *"
+    }
+  ]
 }

@@ -6,10 +6,18 @@ import { z } from "zod";
 import { authConfig } from "@/auth.config";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { emailSchema } from "@/lib/password";
+import {
+  HOUR_MS,
+  loginAccountFailLimit,
+  peekLimit,
+  takeToken,
+} from "@/lib/rate-limit";
 
 const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: emailSchema,
+  // Allow guest one-time secrets (≥8) and registered passwords (≥8).
+  password: z.string().min(8).max(128),
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -24,17 +32,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
-        const { email, password } = parsed.data;
+        const email = parsed.data.email.trim().toLowerCase();
+        const { password } = parsed.data;
+
+        const failKey = `login:fail:${email}`;
+        const failLimit = loginAccountFailLimit();
+        const locked = peekLimit(failKey, failLimit, HOUR_MS);
+        if (!locked.allowed) {
+          return null;
+        }
+
         const rows = await db
           .select()
           .from(users)
-          .where(eq(users.email, email.toLowerCase()))
+          .where(eq(users.email, email))
           .limit(1);
         const user = rows[0];
-        if (!user) return null;
+        if (!user) {
+          takeToken(failKey, failLimit, HOUR_MS);
+          return null;
+        }
         const ok = await compare(password, user.passwordHash);
-        if (!ok) return null;
-        return { id: user.id, email: user.email };
+        if (!ok) {
+          takeToken(failKey, failLimit, HOUR_MS);
+          return null;
+        }
+        return {
+          id: user.id,
+          email: user.email,
+          isGuest: user.isGuest,
+        };
       },
     }),
   ],

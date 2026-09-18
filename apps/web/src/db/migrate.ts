@@ -28,6 +28,8 @@ async function main() {
     )
   `;
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS users_email_uidx ON users (email)`;
+  await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_guest boolean NOT NULL DEFAULT false`;
+  await sql`CREATE INDEX IF NOT EXISTS users_guest_created_idx ON users (is_guest, created_at)`;
 
   await sql`
     CREATE TABLE IF NOT EXISTS documents (

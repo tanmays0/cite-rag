@@ -6,28 +6,54 @@ import {
 import { sql } from "@/db";
 import { embedQuery } from "./embeddings";
 
+/**
+ * Retrieve from shared corpus plus the caller's own uploads only.
+ * Other users' uploads never enter the context window.
+ */
 export async function retrieveTopK(
   query: string,
   k: number = DEFAULT_TOP_K,
+  ownerUserId?: string,
 ): Promise<RetrievedChunk[]> {
   const embedding = await embedQuery(query);
   const vectorLiteral = `[${embedding.join(",")}]`;
 
-  const rows = await sql`
-    SELECT
-      c.id,
-      c.document_id AS "documentId",
-      d.title AS "documentTitle",
-      c.content,
-      c.chunk_index AS "chunkIndex",
-      c.page_or_section AS "pageOrSection",
-      (c.embedding <=> ${vectorLiteral}::vector) AS distance
-    FROM chunks c
-    INNER JOIN documents d ON d.id = c.document_id
-    WHERE d.status = 'ready'
-    ORDER BY c.embedding <=> ${vectorLiteral}::vector
-    LIMIT ${k}
-  `;
+  const rows = ownerUserId
+    ? await sql`
+        SELECT
+          c.id,
+          c.document_id AS "documentId",
+          d.title AS "documentTitle",
+          c.content,
+          c.chunk_index AS "chunkIndex",
+          c.page_or_section AS "pageOrSection",
+          (c.embedding <=> ${vectorLiteral}::vector) AS distance
+        FROM chunks c
+        INNER JOIN documents d ON d.id = c.document_id
+        WHERE d.status = 'ready'
+          AND (
+            d.source_type = 'corpus'
+            OR d.owner_user_id = ${ownerUserId}::uuid
+          )
+        ORDER BY c.embedding <=> ${vectorLiteral}::vector
+        LIMIT ${k}
+      `
+    : await sql`
+        SELECT
+          c.id,
+          c.document_id AS "documentId",
+          d.title AS "documentTitle",
+          c.content,
+          c.chunk_index AS "chunkIndex",
+          c.page_or_section AS "pageOrSection",
+          (c.embedding <=> ${vectorLiteral}::vector) AS distance
+        FROM chunks c
+        INNER JOIN documents d ON d.id = c.document_id
+        WHERE d.status = 'ready'
+          AND d.source_type = 'corpus'
+        ORDER BY c.embedding <=> ${vectorLiteral}::vector
+        LIMIT ${k}
+      `;
 
   return rows.map((row) => ({
     id: String(row.id),

@@ -45,5 +45,9 @@ apps/web/models/
 # Logs
 *.log
 npm-debug.log*
-.env*
 *.tsbuildinfo
+
+# Env catch-all (keep example template trackable)
+.env*
+!.env.example
+!apps/web/.env.example

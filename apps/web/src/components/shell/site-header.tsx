@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { TryDemoButton } from "@/components/marketing/try-demo-button";
+import { TryGuestButton } from "@/components/marketing/try-guest-button";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,8 @@ const appLinks = [
 export function SiteHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const isMarketing = pathname === "/" || pathname === "/login";
+  const isMarketing =
+    pathname === "/" || pathname === "/login" || pathname === "/signup";
   const isLanding = pathname === "/";
   const isApp =
     pathname.startsWith("/chat") ||
@@ -61,9 +62,9 @@ export function SiteHeader() {
                 <Link href="/chat">Open chat</Link>
               </Button>
             ) : (
-              <TryDemoButton size="sm" className="ml-2">
-                Try demo
-              </TryDemoButton>
+              <TryGuestButton size="sm" className="ml-2">
+                Try it now
+              </TryGuestButton>
             )}
           </>
         ) : null}
@@ -112,9 +113,18 @@ export function SiteHeader() {
             Sign out
           </Button>
         ) : !isLanding ? (
-          <Button asChild size="sm" className="ml-2">
-            <Link href="/login">Sign in</Link>
-          </Button>
+          <>
+            {pathname !== "/signup" ? (
+              <Button asChild size="sm" className="ml-2" variant="secondary">
+                <Link href="/signup">Sign up</Link>
+              </Button>
+            ) : null}
+            {pathname !== "/login" ? (
+              <Button asChild size="sm" className="ml-2">
+                <Link href="/login">Log in</Link>
+              </Button>
+            ) : null}
+          </>
         ) : null}
       </nav>
     </header>

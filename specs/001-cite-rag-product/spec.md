@@ -43,7 +43,8 @@ A signed-in user browses the 1000+ document corpus, opens a document to see chun
 
 ### User Story 3 - Auth & gated demo (Priority: P2)
 
-Visitors can sign in with email/password or a one-click demo account. Chat and upload require a session.
+Visitors can sign up with email/password, log in, or use a one-click guest session. Chat and upload require a session.
+
 
 **Why this priority**: Shows the app is not an uncapped public free-for-all.
 
@@ -52,7 +53,8 @@ Visitors can sign in with email/password or a one-click demo account. Chat and u
 **Acceptance Scenarios**:
 
 1. **Given** no session, **When** visiting `/chat` or `/library`, **Then** redirect to `/login`.
-2. **Given** demo credentials, **When** clicking Use demo account, **Then** session is created and chat is available.
+2. **Given** a guest CTA, **When** clicking Try it now, **Then** an isolated guest session is created and chat is available.
+3. **Given** a new visitor, **When** signing up with email/password, **Then** a persistent account is created with an isolated library.
 
 ---
 
@@ -85,7 +87,7 @@ An engineer can read published eval scores and reproduce the local stack via Doc
 - **FR-003**: System MUST stream LLM answers with inline citations mapped to retrieved chunks.
 - **FR-004**: System MUST refuse when retrieval is insufficient.
 - **FR-005**: System MUST support ≥1000 documents via offline corpus ingest CLI.
-- **FR-006**: System MUST authenticate users (credentials + demo account) and rate-limit chat/upload.
+- **FR-006**: System MUST authenticate users (credentials signup/login + guest sessions) and rate-limit chat/upload/guest/signup.
 - **FR-007**: System MUST expose chat UI, library UI, landing, login, and evals scorecard.
 - **FR-008**: System MUST provide Docker Compose for local full stack.
 - **FR-009**: System MUST publish retrieval eval scorecard under `evals/`.

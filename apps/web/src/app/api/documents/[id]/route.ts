@@ -20,6 +20,13 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const visible =
+    doc.sourceType === "corpus" ||
+    doc.ownerUserId === session.user.id;
+  if (!visible) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   const chunkRows = await db
     .select({
       id: chunks.id,

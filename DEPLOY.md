@@ -24,10 +24,7 @@ Vercel (apps/web) ──pooler──► Supabase Postgres + pgvector
 | `AUTH_SECRET` | Yes | `openssl rand -base64 32` |
 | `AUTH_URL` | Yes | `https://cite-rag.vercel.app` |
 | `NEXT_PUBLIC_APP_URL` | Yes | `https://cite-rag.vercel.app` |
-| `DEMO_USER_EMAIL` | Yes | `demo@cite-rag.app` |
-| `DEMO_USER_PASSWORD` | Yes | Demo password |
-| `NEXT_PUBLIC_DEMO_EMAIL` | Yes | Same as demo email (login button) |
-| `NEXT_PUBLIC_DEMO_PASSWORD` | Yes | Same as demo password |
+| `CRON_SECRET` | Yes | Bearer token for `/api/cron/cleanup-guests` (Vercel Cron) |
 | `GROQ_API_KEY` | Yes | Chat LLM |
 | `EMBEDDING_PROVIDER` | No | Default `local` |
 | `EMBEDDING_MODEL` | No | Default `Xenova/all-MiniLM-L6-v2` |
@@ -36,8 +33,15 @@ Vercel (apps/web) ──pooler──► Supabase Postgres + pgvector
 | `RETRIEVAL_DISTANCE_THRESHOLD` | No | Default `0.55` |
 | `CHAT_RATE_LIMIT_PER_MIN` | No | Default `20` |
 | `INGEST_RATE_LIMIT_PER_MIN` | No | Default `5` |
+| `REGISTER_RATE_LIMIT_PER_HOUR` | No | Default `5` (per IP) |
+| `GUEST_RATE_LIMIT_PER_HOUR` | No | Default `3` (per IP; stricter than signup) |
+| `LOGIN_RATE_LIMIT_PER_HOUR` | No | Default `30` (credential posts per IP) |
+| `LOGIN_FAIL_LIMIT_PER_HOUR` | No | Default `10` (failed attempts per email) |
+| `GUEST_TTL_HOURS` | No | Default `48` — guest account retention |
 | `MAX_UPLOAD_BYTES` | No | Default `2097152` |
 | `BLOB_READ_WRITE_TOKEN` | No | Vercel Blob |
+| `DEMO_USER_EMAIL` | No | Optional local seed user (`pnpm db:seed-demo`) |
+| `DEMO_USER_PASSWORD` | No | Optional local seed user password |
 
 ### Supabase connection strings
 
@@ -84,7 +88,9 @@ while true; do
 done
 ```
 
-Demo user: `demo@cite-rag.app` / `demo-cite-rag-2026`
+Auth: **Sign up** / **Log in**, or landing **Try it now** (guest session, auto-purged).
+
+Guest cleanup cron: `GET /api/cron/cleanup-guests` with `Authorization: Bearer $CRON_SECRET` (scheduled daily in `vercel.json`).
 
 ## Cost (hobby)
 

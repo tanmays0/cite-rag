@@ -11,6 +11,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed-demo": "tsx src/db/seed-demo.ts",
+    "db:cleanup-guests": "tsx src/db/cleanup-guests.ts",
     "corpus:ingest": "tsx ../../data/scripts/ingest-corpus.ts",
     "eval": "tsx ../../evals/run-eval.ts"
   },

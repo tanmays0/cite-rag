@@ -1,12 +1,11 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || "demo@cite-rag.app";
 
 function LoginForm() {
   const router = useRouter();
@@ -52,12 +51,13 @@ function LoginForm() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-88px)] w-full max-w-md flex-col justify-center px-6 pb-16">
-      <h1 className="brand-mark text-4xl text-paper md:text-5xl">Sign in</h1>
+      <h1 className="brand-mark text-4xl text-paper md:text-5xl">Log in</h1>
       <p className="mt-3 text-sm leading-relaxed text-mist">
-        Enter credentials to ask the corpus. Demo account:{" "}
-        <span className="font-mono text-paper">{DEMO_EMAIL}</span>
-        {" / "}
-        <span className="font-mono text-paper">demo-cite-rag-2026</span>
+        Sign in to chat the corpus and manage your own uploads. New here?{" "}
+        <Link href="/signup" className="text-marker hover:underline">
+          Sign up
+        </Link>
+        .
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
@@ -70,7 +70,6 @@ function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             className="mt-1.5"
             autoComplete="email"
-            placeholder={DEMO_EMAIL}
           />
         </label>
         <label className="block text-sm text-mist">
@@ -78,7 +77,7 @@ function LoginForm() {
           <Input
             type="password"
             required
-            minLength={6}
+            minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1.5"
@@ -87,9 +86,18 @@ function LoginForm() {
         </label>
         {error ? <p className="text-sm text-danger">{error}</p> : null}
         <Button type="submit" size="lg" className="w-full" disabled={loading}>
-          {loading ? "Signing in…" : "Sign in"}
+          {loading ? "Signing in…" : "Log in"}
         </Button>
       </form>
+
+      <p className="mt-8 text-center text-xs text-mist/70">
+        Want a quick look without an account? Use{" "}
+        <span className="text-mist">Try it now</span> on the{" "}
+        <Link href="/" className="text-marker hover:underline">
+          home page
+        </Link>
+        .
+      </p>
     </div>
   );
 }

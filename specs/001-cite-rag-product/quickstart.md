@@ -9,7 +9,7 @@ pnpm db:seed-demo
 pnpm --filter @cite-rag/web dev
 ```
 
-Sign in with the demo account, then open Chat.
+Sign up or log in, or use **Try it now** on the landing page for a guest session.
 
 Bulk corpus (optional, needs OPENAI_API_KEY):
 

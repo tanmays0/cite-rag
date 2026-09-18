@@ -8,7 +8,7 @@ import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { MetricCard } from "@/components/marketing/metric-card";
 import { PipelineDiagram } from "@/components/marketing/pipeline-diagram";
 import { TechBadge } from "@/components/marketing/tech-badge";
-import { TryDemoButton } from "@/components/marketing/try-demo-button";
+import { TryGuestButton } from "@/components/marketing/try-guest-button";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -92,7 +92,10 @@ export default async function MarketingPage() {
         </div>
 
         <div className="animate-rise-delay mt-10 flex flex-wrap items-center gap-3">
-          <TryDemoButton />
+          <TryGuestButton />
+          <Button asChild size="lg" variant="secondary">
+            <Link href="/signup">Sign up</Link>
+          </Button>
           <Button asChild size="lg" variant="secondary">
             <Link
               href="https://github.com/tanmays0/cite-rag"

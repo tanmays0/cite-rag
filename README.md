@@ -24,7 +24,7 @@ Production-style **citation-backed RAG**: ingest 1,000+ docs → chunk → embed
 | --- | --- |
 | **Frontend** | Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, Motion, Lenis |
 | **API** | Next.js Route Handlers, Vercel AI SDK streaming, Zod validation |
-| **Auth & limits** | Auth.js (credentials + demo user), per-route rate limiting |
+| **Auth & limits** | Auth.js (email/password signup + guest sessions), per-route rate limiting |
 | **RAG core** | Monorepo package `@cite-rag/rag` — chunk, retrieve, ground, cite |
 | **Vectors** | Supabase Postgres + **pgvector** (HNSW / cosine, 384-d) |
 | **Embeddings** | In-process **Transformers.js** `all-MiniLM-L6-v2` (free); optional OpenAI |
@@ -69,9 +69,7 @@ pnpm db:seed-demo
 pnpm dev
 ```
 
-Sign in with **Use demo account**, then open Chat.
-
-Demo credentials: `demo@cite-rag.app` / `demo-cite-rag-2026`
+Open `/` and click **Try it now** for a one-click guest session, or **Sign up** / **Log in** for a persistent account. Guest uploads are isolated and purged after ~48 hours.
 
 ## Corpus ingest (1,000+ docs)
 

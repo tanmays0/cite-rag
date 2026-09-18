@@ -31,11 +31,15 @@ export const users = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     email: text("email").notNull(),
     passwordHash: text("password_hash").notNull(),
+    isGuest: boolean("is_guest").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
-  (t) => [uniqueIndex("users_email_uidx").on(t.email)],
+  (t) => [
+    uniqueIndex("users_email_uidx").on(t.email),
+    index("users_guest_created_idx").on(t.isGuest, t.createdAt),
+  ],
 );
 
 export const documents = pgTable(
