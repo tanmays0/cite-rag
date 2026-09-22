@@ -88,6 +88,15 @@ async function main() {
     )
   `;
 
+  // PostgREST exposes public tables; RLS with no anon policies blocks the anon key.
+  // App traffic uses DATABASE_URL (postgres), which bypasses RLS.
+  await sql`ALTER TABLE users ENABLE ROW LEVEL SECURITY`;
+  await sql`ALTER TABLE documents ENABLE ROW LEVEL SECURITY`;
+  await sql`ALTER TABLE chunks ENABLE ROW LEVEL SECURITY`;
+  await sql`ALTER TABLE conversations ENABLE ROW LEVEL SECURITY`;
+  await sql`ALTER TABLE messages ENABLE ROW LEVEL SECURITY`;
+  await sql`ALTER TABLE message_citations ENABLE ROW LEVEL SECURITY`;
+
   // Free local MiniLM is 384-d; recreate column if an older 1536-d schema exists.
   await sql.unsafe(`
     DO $$
