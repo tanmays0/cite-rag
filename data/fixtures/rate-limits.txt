@@ -3,3 +3,34 @@ cite-rag uses an in-app token bucket inspired by LimitLab concepts.
 When a client exceeds the per-minute budget, the API returns HTTP 429 with Retry-After.
 Chat may allow about twenty requests per minute; ingest is stricter at five per minute.
 Recruiters can still complete the demo script without hitting limits under normal use.
+
+What HTTP status does cite-rag return when rate limited? It returns HTTP 429. Clients should
+respect the Retry-After header concept when present and back off before retrying. Bursting
+through free-tier quotas can exhaust LLM and embedding budgets for everyone else on the demo.
+
+How many chat requests per minute does the demo allow? About twenty requests per minute for
+chat. Upload and ingest endpoints use a lower ceiling — five per minute — because parsing
+and embedding are more expensive than a single chat turn. Guest provisioning and signup also
+carry coarser hourly caps to reduce automated account creation.
+
+What inspires the in-app token bucket rate limiter? LimitLab-style token bucket ideas: tokens
+refill over a window, and each request spends one or more tokens. When the bucket is empty,
+the request is rejected with 429 instead of being queued indefinitely. In-memory buckets are
+simple for demos; production systems may move counters to Redis for multi-instance fairness.
+
+Which endpoints are protected by rate limiting? Chat, ingest/upload, guest session creation,
+and signup are protected. Health and static marketing pages are not. This keeps the landing
+experience open while shielding the costly AI paths.
+
+Can recruiters finish the demo without hitting rate limits under normal use? Yes. The budgets
+are sized so a careful walkthrough — a few uploads and a handful of grounded questions —
+stays under the caps. Aggressive scripted hammering will trip 429 responses by design.
+
+Operational notes: rate-limit headers such as X-RateLimit-Limit and X-RateLimit-Remaining help
+clients adapt. Logging should record the limited route and a coarse client key (for example
+IP) without storing raw secrets. False positives are preferable to an unbounded bill when a
+demo is public on the internet.
+
+Separating rate limits from retrieval eval matters: a 429 is an availability control, not a
+grounding refusal. The eval harness measures retrieval Hit@k and OOD refusal independently
+from HTTP throttling behavior.

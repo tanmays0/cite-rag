@@ -116,6 +116,113 @@ export function chunkText(
   return chunks;
 }
 
+/**
+ * Split into paragraphs / sentences, then pack toward a token budget.
+ * No second embedding model — structure-aware packing only.
+ */
+export function chunkTextSemantic(
+  text: string,
+  options?: {
+    targetTokensMin?: number;
+    targetTokensMax?: number;
+    overlapRatio?: number;
+    pageOrSection?: string | null;
+  },
+): TextChunk[] {
+  const targetMin = options?.targetTokensMin ?? 400;
+  const targetMax = options?.targetTokensMax ?? 600;
+  const overlapRatio = options?.overlapRatio ?? 0.1;
+  const pageOrSection = options?.pageOrSection ?? null;
+  const cleaned = text.replace(/\r\n/g, "\n").trim();
+  if (!cleaned) return [];
+
+  const units = splitSemanticUnits(cleaned);
+  if (!units.length) return [];
+
+  const packed: string[] = [];
+  let buf = "";
+  for (const unit of units) {
+    const candidate = buf ? `${buf} ${unit}` : unit;
+    if (estimateTokens(candidate) <= targetMax) {
+      buf = candidate;
+      if (estimateTokens(buf) >= targetMin) {
+        packed.push(buf.trim());
+        buf = "";
+      }
+      continue;
+    }
+    if (buf.trim()) {
+      packed.push(buf.trim());
+      buf = "";
+    }
+    if (estimateTokens(unit) > targetMax) {
+      const hard = chunkText(unit, {
+        targetTokens: targetMax,
+        overlapRatio: 0,
+        pageOrSection,
+      });
+      for (const h of hard) packed.push(h.content);
+    } else {
+      buf = unit;
+    }
+  }
+  if (buf.trim()) packed.push(buf.trim());
+
+  if (overlapRatio <= 0 || packed.length <= 1) {
+    return packed.map((content, chunkIndex) => ({
+      content,
+      chunkIndex,
+      pageOrSection,
+      tokenCount: estimateTokens(content),
+    }));
+  }
+
+  // Light overlap: prepend a suffix of the previous chunk.
+  const out: TextChunk[] = [];
+  for (let i = 0; i < packed.length; i++) {
+    let content = packed[i]!;
+    if (i > 0) {
+      const prev = packed[i - 1]!;
+      const overlapTokens = Math.max(
+        1,
+        Math.floor(estimateTokens(prev) * overlapRatio),
+      );
+      const overlapChars = overlapTokens * 4;
+      const suffix = prev.slice(Math.max(0, prev.length - overlapChars)).trim();
+      if (suffix) content = `${suffix} ${content}`;
+    }
+    out.push({
+      content,
+      chunkIndex: i,
+      pageOrSection,
+      tokenCount: estimateTokens(content),
+    });
+  }
+  return out;
+}
+
+/** Paragraphs first; fall back to sentence-ish splits for long blocks. */
+export function splitSemanticUnits(text: string): string[] {
+  const paragraphs = text
+    .split(/\n\s*\n/)
+    .map((p) => p.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  const units: string[] = [];
+  for (const p of paragraphs) {
+    if (estimateTokens(p) <= 600) {
+      units.push(p);
+      continue;
+    }
+    const sentences = p.split(/(?<=[.!?])\s+/).filter(Boolean);
+    if (sentences.length <= 1) {
+      units.push(p);
+    } else {
+      units.push(...sentences);
+    }
+  }
+  return units;
+}
+
 /** Chunk multi-page PDF text with per-page labels. */
 export function chunkPages(
   pages: Array<{ pageNumber: number; text: string }>,

@@ -3,3 +3,36 @@ A citation should include the source document title and a page or section when a
 If retrieval scores are weak, the assistant must refuse rather than invent sources.
 cite-rag shows citations in a sidebar and maps markers like [1] to passage snippets.
 Never fabricate a citation that was not returned by the retriever.
+
+Citation markers in the assistant message are short integers in brackets. The UI maps each
+marker to a snippet card so a recruiter or reviewer can open the supporting passage. When a
+grounded answer is produced, the API also returns structured citation objects with rank,
+document title, optional page or section, a short snippet, and a similarity-derived score.
+
+Refusal behavior is part of citation integrity. When the grounding gate fails, cite-rag does
+not invent a bibliography. It returns an explicit insufficient-context message instead of a
+fluent but unsupported answer. That is safer than citing chunks that were never retrieved.
+
+What happens when retrieval scores are weak? The system must refuse instead of inventing
+sources. Weak scores mean the nearest neighbors are still semantically distant from the
+question. In that case, citing them would mislead the user into thinking the corpus supports
+claims it does not contain.
+
+Where are citations shown in the cite-rag product UI? They appear in a dedicated citation
+sidebar alongside the chat transcript. Selecting a marker highlights the corresponding
+snippet. Does the citation sidebar map markers like [1] to snippets? Yes — that mapping is
+the primary way users verify grounded answers.
+
+Good citation practice also avoids over-citing. Only passages that actually support a claim
+should be referenced. Duplicate neighbors from the same paragraph can be collapsed. The
+eval harness checks citation presence among answers that pass the grounding gate: if the
+gate passes, at least one citation object should be available for the client to render.
+
+Product teams often confuse "the model mentioned a title" with "the retriever returned that
+document." cite-rag only allows titles that appear in the retrieved set for that turn. Should
+the model fabricate a citation that was not retrieved? No. Silent hallucination of sources
+is forbidden by the project constitution.
+
+Evaluation separates retrieval hit-rate from abstention quality. A system can retrieve well
+yet still refuse incorrectly, or retrieve poorly yet refuse correctly on out-of-domain
+questions. Measuring both avoids celebrating a chatbot that always answers confidently.

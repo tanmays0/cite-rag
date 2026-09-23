@@ -4,3 +4,42 @@ are stored in a vector index such as pgvector. At query time the user question i
 with the same model, the nearest chunks are retrieved, and the language model answers using
 only that context. This reduces hallucinations compared to answering from parametric memory alone.
 cite-rag implements this pipeline end-to-end: load, chunk, embed, index, retrieve, and cite.
+
+Embedding models map text into a continuous vector space where semantically similar phrases
+sit near each other. Free local models such as all-MiniLM-L6-v2 produce 384-dimensional
+vectors and are enough for small product demos. Paid APIs can produce higher-dimensional
+embeddings when quality or multilingual coverage matters more than cost. The same embedding
+model must be used at ingest time and at query time so distances remain meaningful.
+
+Chunking is the step after loading documents in the RAG pipeline. Typical next steps are:
+embed each chunk, write vectors into an index, retrieve nearest neighbors for a question,
+then generate an answer with citations. How you split text changes what the retriever can
+find. Very large chunks mix unrelated topics; very small chunks lose surrounding context.
+Overlap between adjacent chunks can recover sentences that would otherwise sit on a boundary.
+
+Vector indexes like pgvector are used at query time by comparing the query embedding to
+stored chunk embeddings with a distance operator (often cosine distance). The engine returns
+the nearest neighbors. Approximate indexes such as HNSW trade a small amount of recall for
+much lower latency on large corpora. Exact scans are fine for tiny fixture corpora used in
+offline evaluation.
+
+Semantic search works because the embedding geometry captures paraphrase and topical
+relatedness, not only keyword overlap. A question about "how nearest chunks are retrieved"
+can match a passage that never uses those exact words if the meaning is close enough in
+vector space. Keyword search alone would miss many of those paraphrases.
+
+Grounding means the model is asked to answer using retrieved passages only. When the best
+neighbor is still weakly related, a production system should refuse instead of guessing.
+cite-rag applies a distance threshold after retrieval: if the closest chunk is farther than
+the threshold, the assistant declines to answer. That policy is part of reducing
+hallucinations versus relying on parametric memory alone.
+
+Offline evaluation measures whether the retriever actually surfaces the document that
+contains the answer. Hit@k asks whether the expected source appears in the top-k neighbors.
+Mean Reciprocal Rank (MRR) rewards placing the relevant source earlier in the ranking.
+These metrics evaluate retrieval quality separately from answer wording.
+
+A practical RAG engineering loop is: fix a quiz set, change one variable (chunk size,
+overlap, or packing strategy), re-embed, and compare Hit@k and MRR. That turns a demo chatbot
+into an experimentally evaluated retrieval system. cite-rag's eval harness follows that loop
+on a fixture corpus so experiments stay reproducible without re-ingesting thousands of docs.

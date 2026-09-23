@@ -13,7 +13,8 @@
     "db:seed-demo": "tsx src/db/seed-demo.ts",
     "db:cleanup-guests": "tsx src/db/cleanup-guests.ts",
     "corpus:ingest": "tsx ../../data/scripts/ingest-corpus.ts",
-    "eval": "tsx ../../evals/run-eval.ts"
+    "eval": "tsx ../../evals/run-eval.ts",
+    "eval:ablation": "tsx ../../evals/run-ablation.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.2.9",

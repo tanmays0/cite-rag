@@ -1,10 +1,21 @@
-import { chunkPages, chunkText, estimateTokens } from "./chunk.js";
+import {
+  chunkPages,
+  chunkText,
+  chunkTextSemantic,
+  estimateTokens,
+  splitSemanticUnits,
+} from "./chunk.js";
 import {
   LOCAL_EMBEDDING_DIM,
   LOCAL_EMBEDDING_MODEL,
   embedLocalMany,
   embedLocalOne,
 } from "./embed-local.js";
+import {
+  DEFAULT_RERANK_MODEL,
+  applyRerankScores,
+  rerankCrossEncoder,
+} from "./rerank.js";
 import {
   DEFAULT_DISTANCE_THRESHOLD,
   DEFAULT_TOP_K,
@@ -24,8 +35,10 @@ import type {
 
 export {
   chunkText,
+  chunkTextSemantic,
   chunkPages,
   estimateTokens,
+  splitSemanticUnits,
   applyGroundingGate,
   buildCitedSystemPrompt,
   toCitations,
@@ -37,6 +50,9 @@ export {
   embedLocalOne,
   LOCAL_EMBEDDING_DIM,
   LOCAL_EMBEDDING_MODEL,
+  rerankCrossEncoder,
+  applyRerankScores,
+  DEFAULT_RERANK_MODEL,
 };
 
 export type {

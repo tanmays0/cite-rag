@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   chunkText,
+  chunkTextSemantic,
   estimateTokens,
   findChunkEnd,
   snapToWordStart,
+  splitSemanticUnits,
 } from "./chunk.js";
 import {
   DEFAULT_DISTANCE_THRESHOLD,
@@ -53,6 +55,29 @@ describe("chunkText", () => {
     const end = findChunkEnd(text, 0, 120);
     expect(end).toBeLessThanOrEqual(120);
     expect(text[end - 1]).toMatch(/[\s.]/);
+  });
+});
+
+describe("chunkTextSemantic", () => {
+  it("packs paragraph units toward the token budget", () => {
+    const paragraphs = Array.from(
+      { length: 12 },
+      (_, i) => `Paragraph ${i}. ` + "word ".repeat(80),
+    ).join("\n\n");
+    const chunks = chunkTextSemantic(paragraphs, {
+      targetTokensMin: 200,
+      targetTokensMax: 400,
+      overlapRatio: 0.1,
+    });
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.every((c) => c.content.length > 0)).toBe(true);
+    expect(chunks[0]!.chunkIndex).toBe(0);
+  });
+
+  it("splitSemanticUnits prefers paragraphs then sentences", () => {
+    const text = "First para.\n\nSecond para is longer. It has two sentences.";
+    const units = splitSemanticUnits(text);
+    expect(units.length).toBeGreaterThanOrEqual(2);
   });
 });
 

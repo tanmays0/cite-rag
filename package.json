@@ -14,7 +14,8 @@
     "db:seed-demo": "pnpm --filter @cite-rag/web db:seed-demo",
     "corpus:generate": "node data/scripts/generate-synthetic-corpus.mjs --limit 1000",
     "corpus:ingest": "pnpm --filter @cite-rag/web corpus:ingest",
-    "eval": "pnpm --filter @cite-rag/web eval"
+    "eval": "pnpm --filter @cite-rag/web eval",
+    "eval:ablation": "pnpm --filter @cite-rag/web eval:ablation"
   },
   "engines": {
     "node": ">=20"
