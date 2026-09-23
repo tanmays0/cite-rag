@@ -117,8 +117,8 @@ Offline eval uses the **same MiniLM model** as the app (`Xenova/all-MiniLM-L6-v2
 | Artifacts | [`evals/scorecard.md`](./evals/scorecard.md), [`evals/ablation.md`](./evals/ablation.md), [`evals/results/`](./evals/results/) |
 
 ```bash
-pnpm eval              # baseline MiniLM scorecard
-pnpm eval:ablation     # configs A–G + rerank on best + OOD
+pnpm eval              
+pnpm eval:ablation     
 ```
 
 `EVAL_HASH_EMBEDDINGS=1` is **smoke only — not representative of retrieval quality**.
